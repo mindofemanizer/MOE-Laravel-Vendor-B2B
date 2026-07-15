@@ -1,0 +1,169 @@
+<?php
+
+namespace Moe\VendorB2B\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
+
+class PurchaseOrder extends Model
+{
+    use SoftDeletes;
+
+    protected $table;
+
+    const STATUS_DRAFT = 'draft';
+    const STATUS_PENDING = 'pending';
+    const STATUS_APPROVED = 'approved';
+    const STATUS_SHIPPED = 'shipped';
+    const STATUS_RECEIVED = 'received';
+    const STATUS_CANCELLED = 'cancelled';
+
+    const STATUS_LABELS = [
+        self::STATUS_DRAFT => 'Draf',
+        self::STATUS_PENDING => 'Menunggu Persetujuan',
+        self::STATUS_APPROVED => 'Disetujui',
+        self::STATUS_SHIPPED => 'Dikirim',
+        self::STATUS_RECEIVED => 'Diterima',
+        self::STATUS_CANCELLED => 'Dibatalkan',
+    ];
+
+    protected $fillable = [
+        'po_number',
+        'vendor_id',
+        'status',
+        'order_date',
+        'expected_delivery_date',
+        'actual_delivery_date',
+        'subtotal',
+        'tax',
+        'shipping_cost',
+        'total',
+        'notes',
+        'created_by',
+        'approved_by',
+        'approved_at',
+        'qc_checked_by',
+        'qc_checked_at',
+    ];
+
+    protected $casts = [
+        'order_date' => 'date',
+        'expected_delivery_date' => 'date',
+        'actual_delivery_date' => 'date',
+        'subtotal' => 'decimal:2',
+        'tax' => 'decimal:2',
+        'shipping_cost' => 'decimal:2',
+        'total' => 'decimal:2',
+        'approved_at' => 'datetime',
+        'qc_checked_at' => 'datetime',
+    ];
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('vendor-b2b.tables.purchase_orders', 'purchase_orders');
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (PurchaseOrder $po) {
+            if (empty($po->po_number)) {
+                $po->po_number = static::generatePONumber();
+            }
+            if (empty($po->status)) {
+                $po->status = self::STATUS_DRAFT;
+            }
+        });
+    }
+
+    public static function generatePONumber(): string
+    {
+        return 'PO-' . date('Ymd') . '-' . strtoupper(Str::random(6));
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'po_number';
+    }
+
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(Vendor::class);
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(PurchaseOrderItem::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(config('vendor-b2b.models.user', 'App\\Models\\User'), 'created_by');
+    }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(config('vendor-b2b.models.user', 'App\\Models\\User'), 'approved_by');
+    }
+
+    public function qcCheckedBy()
+    {
+        return $this->belongsTo(config('vendor-b2b.models.user', 'App\\Models\\User'), 'qc_checked_by');
+    }
+
+    public function vendorPayouts(): HasMany
+    {
+        return $this->hasMany(VendorPayout::class);
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return self::STATUS_LABELS[$this->status] ?? ucfirst($this->status);
+    }
+
+    public function getStatusBadgeAttribute(): string
+    {
+        return match($this->status) {
+            self::STATUS_DRAFT => 'bg-surface-variant text-on-surface-variant',
+            self::STATUS_PENDING => 'bg-tertiary-fixed text-on-tertiary-fixed-variant',
+            self::STATUS_APPROVED => 'bg-primary-container/20 text-primary',
+            self::STATUS_SHIPPED => 'bg-secondary-container text-on-secondary-container',
+            self::STATUS_RECEIVED => 'bg-secondary-container text-on-secondary-container',
+            self::STATUS_CANCELLED => 'bg-error-container text-on-error',
+            default => 'bg-surface-variant text-on-surface-variant',
+        };
+    }
+
+    public function isEditable(): bool
+    {
+        return $this->status === self::STATUS_DRAFT;
+    }
+
+    public function canSubmit(): bool
+    {
+        return $this->status === self::STATUS_DRAFT && $this->items->count() > 0;
+    }
+
+    public function canApprove(): bool
+    {
+        return $this->status === self::STATUS_PENDING;
+    }
+
+    public function canShip(): bool
+    {
+        return $this->status === self::STATUS_APPROVED;
+    }
+
+    public function canReceive(): bool
+    {
+        return $this->status === self::STATUS_SHIPPED;
+    }
+
+    public function canCancel(): bool
+    {
+        return in_array($this->status, [self::STATUS_DRAFT, self::STATUS_PENDING, self::STATUS_APPROVED]);
+    }
+}

@@ -1,0 +1,42 @@
+{
+    "name": "moe/laravel-vendor-b2b",
+    "description": "Vendor B2B module for MOE ecosystem — Vendor, Purchase Order, Payout",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "MindOfEmanizer",
+            "email": "emanizer@example.com"
+        }
+    ],
+    "keywords": ["laravel", "vendor", "b2b", "purchase-order", "payout", "moe"],
+    "autoload": {
+        "psr-4": {
+            "Moe\\VendorB2B\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moe\\VendorB2B\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^12.0|^13.0",
+        "moe/laravel-core": "*",
+        "moe/laravel-inventory": "*"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0",
+        "phpunit/phpunit": "^11.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moe\\VendorB2B\\VendorB2BServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
