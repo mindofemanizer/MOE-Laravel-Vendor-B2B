@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Moe\VendorB2B\Models;
 

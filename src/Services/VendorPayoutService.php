@@ -1,8 +1,8 @@
 <?php
+declare(strict_types=1);
 
 namespace Moe\VendorB2B\Services;
 
-use Illuminate\Support\Facades\DB;
 use Moe\Core\Base\BaseService;
 use Moe\VendorB2B\Models\VendorPayout;
 

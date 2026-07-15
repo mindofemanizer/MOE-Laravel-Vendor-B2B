@@ -10,9 +10,9 @@ return [
 
     'models' => [
 
-        'user' => App\Models\User::class,
+        'user' => 'App\Models\User',
 
-        'product' => App\Models\Product::class,
+        'product' => 'App\Models\Product',
 
     ],
 

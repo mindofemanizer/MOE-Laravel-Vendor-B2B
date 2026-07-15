@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Moe\VendorB2B\Models;
 
@@ -14,14 +15,14 @@ class PurchaseOrder extends Model
 
     protected $table;
 
-    const STATUS_DRAFT = 'draft';
-    const STATUS_PENDING = 'pending';
-    const STATUS_APPROVED = 'approved';
-    const STATUS_SHIPPED = 'shipped';
-    const STATUS_RECEIVED = 'received';
-    const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_SHIPPED = 'shipped';
+    public const STATUS_RECEIVED = 'received';
+    public const STATUS_CANCELLED = 'cancelled';
 
-    const STATUS_LABELS = [
+    public const STATUS_LABELS = [
         self::STATUS_DRAFT => 'Draf',
         self::STATUS_PENDING => 'Menunggu Persetujuan',
         self::STATUS_APPROVED => 'Disetujui',
@@ -99,17 +100,17 @@ class PurchaseOrder extends Model
         return $this->hasMany(PurchaseOrderItem::class);
     }
 
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(config('vendor-b2b.models.user', 'App\\Models\\User'), 'created_by');
     }
 
-    public function approvedBy()
+    public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(config('vendor-b2b.models.user', 'App\\Models\\User'), 'approved_by');
     }
 
-    public function qcCheckedBy()
+    public function qcCheckedBy(): BelongsTo
     {
         return $this->belongsTo(config('vendor-b2b.models.user', 'App\\Models\\User'), 'qc_checked_by');
     }

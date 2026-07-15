@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Moe\VendorB2B\Models;
 
@@ -14,13 +15,13 @@ class VendorPayout extends Model implements PayoutableInterface
 
     protected $table;
 
-    const STATUS_PENDING = 'pending';
-    const STATUS_APPROVED = 'approved';
-    const STATUS_PAID = 'paid';
-    const STATUS_REJECTED = 'rejected';
-    const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_PAID = 'paid';
+    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_CANCELLED = 'cancelled';
 
-    const STATUS_LABELS = [
+    public const STATUS_LABELS = [
         self::STATUS_PENDING => 'Menunggu',
         self::STATUS_APPROVED => 'Disetujui',
         self::STATUS_PAID => 'Dibayar',
@@ -96,12 +97,12 @@ class VendorPayout extends Model implements PayoutableInterface
         return $this->belongsTo(PurchaseOrder::class);
     }
 
-    public function approver()
+    public function approver(): BelongsTo
     {
         return $this->belongsTo(config('vendor-b2b.models.user', 'App\\Models\\User'), 'approved_by');
     }
 
-    public function payer()
+    public function payer(): BelongsTo
     {
         return $this->belongsTo(config('vendor-b2b.models.user', 'App\\Models\\User'), 'paid_by');
     }
