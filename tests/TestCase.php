@@ -21,11 +21,31 @@ class TestCase extends Orchestra
             'database' => ':memory:',
             'prefix' => '',
         ]);
+        $app['config']->set('vendor-b2b.models.user', \Moe\VendorB2B\Tests\Stubs\User::class);
     }
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        if (! \Illuminate\Support\Facades\Schema::hasTable('users')) {
+            \Illuminate\Support\Facades\Schema::create('users', function ($table) {
+                $table->id();
+                $table->string('name');
+                $table->string('email')->unique();
+                $table->string('password');
+                $table->timestamps();
+            });
+        }
+
+        if (! \Illuminate\Support\Facades\Schema::hasTable('products')) {
+            \Illuminate\Support\Facades\Schema::create('products', function ($table) {
+                $table->id();
+                $table->string('name');
+                $table->timestamps();
+            });
+        }
+
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 }
