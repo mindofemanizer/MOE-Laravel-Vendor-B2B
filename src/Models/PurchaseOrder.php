@@ -138,31 +138,49 @@ class PurchaseOrder extends Model
         };
     }
 
+    /**
+     * Check if the purchase order is editable.
+     */
     public function isEditable(): bool
     {
         return $this->status === self::STATUS_DRAFT;
     }
 
+    /**
+     * Check if the purchase order can be submitted.
+     */
     public function canSubmit(): bool
     {
-        return $this->status === self::STATUS_DRAFT && $this->items->count() > 0;
+        return $this->status === self::STATUS_DRAFT && $this->items->isNotEmpty();
     }
 
+    /**
+     * Check if the purchase order can be approved.
+     */
     public function canApprove(): bool
     {
         return $this->status === self::STATUS_PENDING;
     }
 
+    /**
+     * Check if the purchase order can be shipped.
+     */
     public function canShip(): bool
     {
         return $this->status === self::STATUS_APPROVED;
     }
 
+    /**
+     * Check if the purchase order can be received.
+     */
     public function canReceive(): bool
     {
         return $this->status === self::STATUS_SHIPPED;
     }
 
+    /**
+     * Check if the purchase order can be cancelled.
+     */
     public function canCancel(): bool
     {
         return in_array($this->status, [self::STATUS_DRAFT, self::STATUS_PENDING, self::STATUS_APPROVED]);

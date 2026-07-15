@@ -10,6 +10,9 @@ class VendorPayoutService extends BaseService
 {
     /**
      * Create payout request.
+     *
+     * @throws \Exception
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function create(int $vendorId, int $purchaseOrderId, array $bankDetails): VendorPayout
     {
@@ -18,7 +21,6 @@ class VendorPayoutService extends BaseService
             ->where('status', 'received')
             ->firstOrFail();
 
-        // Check if already has active payout
         $existingPayout = VendorPayout::where('vendor_id', $vendorId)
             ->where('purchase_order_id', $purchaseOrderId)
             ->whereIn('status', ['pending', 'approved'])
@@ -41,6 +43,8 @@ class VendorPayoutService extends BaseService
 
     /**
      * Approve payout.
+     *
+     * @throws \Exception
      */
     public function approve(VendorPayout $payout): void
     {
@@ -57,6 +61,8 @@ class VendorPayoutService extends BaseService
 
     /**
      * Reject payout.
+     *
+     * @throws \Exception
      */
     public function reject(VendorPayout $payout, string $reason): void
     {
@@ -73,6 +79,8 @@ class VendorPayoutService extends BaseService
 
     /**
      * Mark payout as paid.
+     *
+     * @throws \Exception
      */
     public function markPaid(VendorPayout $payout, string $reference): void
     {
@@ -85,6 +93,8 @@ class VendorPayoutService extends BaseService
 
     /**
      * Cancel payout.
+     *
+     * @throws \Exception
      */
     public function cancel(VendorPayout $payout): void
     {

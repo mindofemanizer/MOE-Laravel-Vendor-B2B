@@ -7,11 +7,17 @@ use Illuminate\Support\ServiceProvider;
 
 class VendorB2BServiceProvider extends ServiceProvider
 {
+    /**
+     * Register the service provider.
+     */
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/vendor-b2b.php', 'vendor-b2b');
     }
 
+    /**
+     * Bootstrap the application services.
+     */
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');

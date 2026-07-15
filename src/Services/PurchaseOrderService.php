@@ -50,6 +50,8 @@ class PurchaseOrderService extends BaseService
 
     /**
      * Submit PO for approval.
+     *
+     * @throws \Exception
      */
     public function submit(PurchaseOrder $po): void
     {
@@ -62,6 +64,8 @@ class PurchaseOrderService extends BaseService
 
     /**
      * Approve PO.
+     *
+     * @throws \Exception
      */
     public function approve(PurchaseOrder $po): void
     {
@@ -78,6 +82,8 @@ class PurchaseOrderService extends BaseService
 
     /**
      * Ship PO.
+     *
+     * @throws \Exception
      */
     public function ship(PurchaseOrder $po): void
     {
@@ -90,6 +96,9 @@ class PurchaseOrderService extends BaseService
 
     /**
      * Receive PO with inspection.
+     *
+     * @throws \Exception
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function receive(PurchaseOrder $po, array $inspectionData): void
     {
@@ -107,7 +116,6 @@ class PurchaseOrderService extends BaseService
                     'qc_notes' => $itemData['qc_notes'] ?? null,
                 ]);
 
-                // Increment stock only for received quantity
                 if ($itemData['received_quantity'] > 0) {
                     $product = $item->product;
                     if ($product && $product->inventory) {
@@ -127,6 +135,8 @@ class PurchaseOrderService extends BaseService
 
     /**
      * Cancel PO.
+     *
+     * @throws \Exception
      */
     public function cancel(PurchaseOrder $po, string $reason): void
     {
